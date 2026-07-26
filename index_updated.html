@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    ================================================================
+    DESIGN SYSTEM NOTES (kept here for the next files: style.css / script.js)
+    ----------------------------------------------------------------
+    Palette
+      --bg        #060A14   deep space navy (base canvas)
+      --bg-alt    #0A1120   secondary panel navy
+      --surface   rgba(255,255,255,0.045)  glass panel fill
+      --border    rgba(148,163,184,0.14)   hairline glass edge
+      --primary   #2F6FED   signal blue
+      --cyan      #22D3EE   circuit cyan
+      --violet    #7C5CFF   AI/inference accent (sparingly)
+      --text      #E7ECF5   primary text
+      --muted     #8B96AA   secondary text
+      --success   #22C55E   paid / passed
+      --warning   #F59E0B   partial / pending review
+      --danger    #EF4444   overdue / failed
+
+    Type
+      Display : "Space Grotesk"  — geometric, technical, used for headings
+      Body    : "Inter"          — neutral, highly legible for long copy
+      Mono    : "JetBrains Mono" — used ONLY for data: grades, fee figures,
+                 terminal-style eyebrows. This is the signature move: the
+                 site treats academic + financial data like console output,
+                 because the subject is a CS/AI student, not a designer.
+
+    Signature element
+      A live canvas "inference net" behind the hero — nodes that connect
+      and pulse like a small neural network, drawn with vanilla JS/canvas.
+      Section eyebrows read like shell commands ("WHO AM I ?", "> academics
+      --sem 1..8") instead of generic 01/02/03 numbering, since the
+      numbering here needs to mean something (semesters ARE sequential,
+      so THAT timeline keeps numbers — everything else uses commands).
+    ================================================================
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shashank Mishra — B.Tech CSE (AI) Student Portfolio</title>
+  <meta name="description" content="Portfolio of Shashank Mishra, B.Tech Computer Science Engineering (Artificial Intelligence) student — projects, skills, academic record, and certificates." />
+  <meta name="keywords" content="Shashank Mishra, portfolio, B.Tech CSE AI, machine learning student, web developer, computer science engineering" />
+  <meta name="author" content="Shashank Mishra" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://shashankmishra.dev/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Shashank Mishra — B.Tech CSE (AI) Student Portfolio" />
+  <meta property="og:description" content="Projects, skills, academic record and certificates of Shashank Mishra, a B.Tech CSE (Artificial Intelligence) student." />
+  <meta property="og:image" content="assets/images/og-cover.jpg" />
+  <meta property="og:url" content="https://shashankmishra.dev/" />
+  <meta property="og:site_name" content="Shashank Mishra Portfolio" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Shashank Mishra — B.Tech CSE (AI) Student Portfolio" />
+  <meta name="twitter:description" content="Projects, skills, academic record and certificates of Shashank Mishra, a B.Tech CSE (Artificial Intelligence) student." />
+  <meta name="twitter:image" content="assets/images/og-cover.jpg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       LOADING SCREEN
+  ============================================================ -->
+  <div id="loading-screen" class="loading-screen" aria-hidden="true">
+    <div class="loading-inner">
+      <span class="loading-prompt">$ booting_portfolio<span class="cursor-blink">_</span></span>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Scroll progress indicator -->
+  <div class="scroll-progress" id="scroll-progress" role="presentation"></div>
+
+  <!-- Cursor glow (desktop only, toggled via JS) -->
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <header class="navbar" id="navbar">
+    <nav class="nav-container" aria-label="Primary navigation">
+      <a href="#home" class="nav-logo" aria-label="Shashank Mishra — home">
+        <span class="logo-bracket">&lt;</span>SM<span class="logo-bracket">/&gt;</span>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+        <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+        <li><a href="#education" class="nav-link" data-section="education">Education</a></li>
+        <li><a href="#results" class="nav-link" data-section="results">Semester Results</a></li>
+        <li><a href="#fees" class="nav-link" data-section="fees">Fees Dashboard</a></li>
+        <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+        <li><a href="#certificates" class="nav-link" data-section="certificates">Certificates</a></li>
+        <li><a href="#resume" class="nav-link" data-section="resume">Resume</a></li>
+        <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light and dark theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" fill="currentColor"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- ==========================================================
+         HERO
+    ========================================================== -->
+    <section id="home" class="hero section" aria-label="Introduction">
+      <canvas id="inference-net" class="inference-net" aria-hidden="true"></canvas>
+      <div class="aurora aurora-1" aria-hidden="true"></div>
+      <div class="aurora aurora-2" aria-hidden="true"></div>
+
+      <div class="hero-shape hero-shape-1" aria-hidden="true"></div>
+      <div class="hero-shape hero-shape-2" aria-hidden="true"></div>
+      <div class="hero-shape hero-shape-3" aria-hidden="true"></div>
+
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <p class="eyebrow mono">WHO AM I ?</p>
+          <h1 class="hero-name">Shashank Mishra</h1>
+          <p class="hero-subtitle">
+            <span id="typing-text" class="typing-text"></span><span class="cursor-blink">|</span>
+          </p>
+          <p class="hero-intro">
+            I build things at the intersection of software engineering and machine learning —
+            training models by day, shipping clean interfaces by night. Currently pursuing my
+            B.Tech in Computer Science Engineering with a specialization in Artificial Intelligence.
+          </p>
+
+          <div class="hero-actions">
+            <a href="assets/resume/Shashank_Mishra_Resume.pdf" download class="btn btn-primary ripple">
+              <span>Download Resume</span>
+            </a>
+            <a href="#contact" class="btn btn-ghost ripple">
+              <span>Get In Touch</span>
+            </a>
+          </div>
+
+          <div class="hero-socials" aria-label="Social links">
+            <a href="https://github.com/" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+            </a>
+            <a href="https://linkedin.com/" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM3.2 8.75h3.5V21H3.2V8.75Zm6.24 0h3.36v1.68h.05c.47-.87 1.6-1.78 3.3-1.78 3.53 0 4.18 2.32 4.18 5.34V21h-3.5v-5.4c0-1.29-.02-2.94-1.79-2.94-1.8 0-2.08 1.4-2.08 2.85V21H9.44V8.75Z"/></svg>
+            </a>
+            <a href="https://twitter.com/" target="_blank" rel="noopener" class="social-icon" aria-label="Twitter / X">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20.9 5.9c-.68.3-1.4.5-2.16.6a3.8 3.8 0 0 0 1.66-2.1c-.73.43-1.53.75-2.39.92a3.75 3.75 0 0 0-6.4 3.42A10.65 10.65 0 0 1 3.98 4.9a3.76 3.76 0 0 0 1.16 5.01c-.62-.02-1.2-.19-1.71-.47v.05a3.76 3.76 0 0 0 3 3.68c-.55.15-1.14.17-1.7.06a3.76 3.76 0 0 0 3.5 2.6A7.53 7.53 0 0 1 2.5 17.4a10.63 10.63 0 0 0 5.76 1.69c6.92 0 10.7-5.74 10.7-10.7 0-.16 0-.33-.01-.49a7.6 7.6 0 0 0 1.95-2.02Z"/></svg>
+            </a>
+            <a href="mailto:shashank.mishra@example.com" class="social-icon" aria-label="Email">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm17.4 2.4-8.4 6-8.4-6" stroke="currentColor" stroke-width="0" /></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="profile-ring">
+            <img src="assets/images/profile.jpg" alt="Portrait of Shashank Mishra" class="profile-img" width="360" height="360" loading="eager" />
+          </div>
+          <div class="glass-chip chip-1 mono">model.fit(effort, results)</div>
+          <div class="glass-chip chip-2 mono">CGPA 9.19</div>
+        </div>
+      </div>
+
+      <a href="#about" class="scroll-indicator" aria-label="Scroll to About section">
+        <span class="scroll-mouse"><span class="scroll-dot"></span></span>
+      </a>
+    </section>
+
+    <!-- ==========================================================
+         ABOUT
+    ========================================================== -->
+    <section id="about" class="section about-section">
+      <div class="container">
+        <p class="eyebrow mono">$ cat about.md</p>
+        <h2 class="section-title">About Me</h2>
+
+        <div class="about-grid">
+          <div class="about-card glass reveal">
+            <h3>Career Objective</h3>
+            <p>
+              To grow as an AI engineer who ships reliable, human-centered products — combining
+              a strong systems foundation with applied machine learning, and a genuine love for
+              clean, thoughtful interfaces.
+            </p>
+          </div>
+
+          <div class="about-timeline reveal">
+            <h3>What I Do</h3>
+            <ul class="timeline">
+              <li class="timeline-item">
+                <span class="timeline-dot"></span>
+                <h4>Artificial Intelligence</h4>
+                <p>Exploring machine learning fundamentals, model training, and applied AI coursework.</p>
+              </li>
+              <li class="timeline-item">
+                <span class="timeline-dot"></span>
+                <h4>Web Development</h4>
+                <p>Designing and building performant, accessible interfaces from scratch.</p>
+              </li>
+              <li class="timeline-item">
+                <span class="timeline-dot"></span>
+                <h4>Problem Solving</h4>
+                <p>Competitive programming and DSA practice to sharpen algorithmic thinking.</p>
+              </li>
+              <li class="timeline-item">
+                <span class="timeline-dot"></span>
+                <h4>Teamwork &amp; Leadership</h4>
+                <p>Leading small project teams and collaborating across hackathons and clubs.</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="about-stats reveal">
+            <div class="stat-card glass">
+              <span class="stat-number" data-count="8">0</span>
+              <span class="stat-label">Semesters Completed</span>
+            </div>
+            <div class="stat-card glass">
+              <span class="stat-number" data-count="12">0</span>
+              <span class="stat-label">Projects Built</span>
+            </div>
+            <div class="stat-card glass">
+              <span class="stat-number" data-count="6">0</span>
+              <span class="stat-label">Certifications</span>
+            </div>
+            <div class="stat-card glass">
+              <span class="stat-number" data-count="8" data-decimal="7">0</span>
+              <span class="stat-label">CGPA</span>
+            </div>
+          </div>
+
+          <div class="about-info glass reveal">
+            <h3>Interests &amp; Hobbies</h3>
+            <div class="tag-list">
+              <span class="tag">Machine Learning</span>
+              <span class="tag">Open Source</span>
+              <span class="tag">UI/UX Design</span>
+              <span class="tag">Competitive Programming</span>
+              <span class="tag">Chess</span>
+              <span class="tag">Sketching</span>
+              <span class="tag">Reading Tech Blogs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         SKILLS
+    ========================================================== -->
+    <section id="skills" class="section skills-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ls skills/</p>
+        <h2 class="section-title">Skills</h2>
+
+        <div class="skills-grid">
+          <div class="skill-group glass reveal">
+            <h3>Programming</h3>
+            <div class="skill-bar" data-percent="80"><span class="skill-name">C</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">80%</span></div>
+            <div class="skill-bar" data-percent="85"><span class="skill-name">C++</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">85%</span></div>
+            <div class="skill-bar" data-percent="75"><span class="skill-name">Java</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">75%</span></div>
+            <div class="skill-bar" data-percent="90"><span class="skill-name">Python</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">90%</span></div>
+            <div class="skill-bar" data-percent="80"><span class="skill-name">JavaScript</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">80%</span></div>
+          </div>
+
+          <div class="skill-group glass reveal">
+            <h3>Web Development</h3>
+            <div class="skill-bar" data-percent="90"><span class="skill-name">HTML</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">90%</span></div>
+            <div class="skill-bar" data-percent="85"><span class="skill-name">CSS</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">85%</span></div>
+            <div class="skill-bar" data-percent="88"><span class="skill-name">Responsive Design</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">88%</span></div>
+          </div>
+
+          <div class="skill-group glass reveal">
+            <h3>Artificial Intelligence</h3>
+            <div class="skill-bar" data-percent="78"><span class="skill-name">AI Fundamentals</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">78%</span></div>
+            <div class="skill-bar" data-percent="72"><span class="skill-name">Machine Learning Basics</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">72%</span></div>
+            <div class="skill-bar" data-percent="82"><span class="skill-name">Data Structures</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">82%</span></div>
+          </div>
+
+          <div class="skill-group glass reveal">
+            <h3>Tools</h3>
+            <div class="skill-bar" data-percent="85"><span class="skill-name">Git</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">85%</span></div>
+            <div class="skill-bar" data-percent="85"><span class="skill-name">GitHub</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">85%</span></div>
+            <div class="skill-bar" data-percent="90"><span class="skill-name">VS Code</span><div class="bar-track"><div class="bar-fill"></div></div><span class="skill-percent">90%</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         EDUCATION
+    ========================================================== -->
+    <section id="education" class="section education-section">
+      <div class="container">
+        <p class="eyebrow mono">$ git log --education</p>
+        <h2 class="section-title">Education</h2>
+
+        <ol class="edu-timeline">
+          <li class="edu-item reveal" data-editable="school">
+            <div class="edu-marker"></div>
+            <div class="edu-card glass">
+              <span class="edu-year">2021–22</span>
+              <h3 class="edu-degree">Secondary School (Class X)</h3>
+              <p class="edu-institute">DAV Public School, Kumarganj, Ayodhya</p>
+              <p class="edu-score">Percentage: <strong>84%</strong></p>
+            </div>
+          </li>
+          <li class="edu-item reveal" data-editable="intermediate">
+            <div class="edu-marker"></div>
+            <div class="edu-card glass">
+              <span class="edu-year">2023–24</span>
+              <h3 class="edu-degree">Intermediate (Class XII), PCM</h3>
+              <p class="edu-institute">DAV Public School, Kumarganj, Ayodhya</p>
+              <p class="edu-score">Percentage: <strong>86%</strong></p>
+            </div>
+          </li>
+          <li class="edu-item reveal" data-editable="college">
+            <div class="edu-marker"></div>
+            <div class="edu-card glass">
+              <span class="edu-year">2025–29</span>
+              <h3 class="edu-degree">B.Tech, Computer Science Engineering (AI)</h3>
+              <p class="edu-institute">Babu Banarasi Das University</p>
+              <p class="edu-score">CGPA: <strong>9.19</strong></p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         SEMESTER RESULTS DASHBOARD
+    ========================================================== -->
+    <section id="results" class="section results-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ./academics --report</p>
+        <h2 class="section-title">Semester Results</h2>
+
+        <div class="results-overview">
+          <div class="cgpa-card glass reveal">
+            <div class="cgpa-ring" data-value="9.19" data-max="10">
+              <svg viewBox="0 0 120 120" class="ring-svg">
+                <circle cx="60" cy="60" r="52" class="ring-track" />
+                <circle cx="60" cy="60" r="52" class="ring-fill" />
+              </svg>
+              <div class="ring-label">
+                <span class="ring-value mono">9.19</span>
+                <span class="ring-sub">Overall CGPA</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="results-stats reveal">
+            <div class="mini-stat glass">
+              <span class="mini-stat-num mono" data-count="8">0</span>
+              <span class="mini-stat-label">Semesters Cleared</span>
+            </div>
+            <div class="mini-stat glass">
+              <span class="mini-stat-num mono" data-count="0">0</span>
+              <span class="mini-stat-label">Backlogs</span>
+            </div>
+            <div class="mini-stat glass">
+              <span class="mini-stat-num mono" data-count="9" data-decimal="19">0</span>
+              <span class="mini-stat-label">Highest SGPA</span>
+            </div>
+          </div>
+
+          <canvas id="cgpa-chart" class="cgpa-chart glass reveal" aria-label="CGPA trend chart across semesters" role="img"></canvas>
+        </div>
+
+        <div class="table-wrapper glass reveal">
+          <table class="results-table" id="results-table">
+            <caption class="sr-only">Semester-wise SGPA, CGPA and result status</caption>
+            <thead>
+              <tr>
+                <th scope="col">Semester</th>
+                <th scope="col">SGPA</th>
+                <th scope="col">CGPA</th>
+                <th scope="col">Percentage</th>
+                <th scope="col">Status</th>
+                <th scope="col">Progress</th>
+                <th scope="col">Marksheet</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Semester rows are identical in structure; each field is contenteditable
+                   so values can be updated directly in the browser (see script.js). -->
+              <tr data-sem="1">
+                <td>Semester 1</td>
+                <td class="editable mono" contenteditable="true" data-field="sgpa">9.19</td>
+                <td class="editable mono" contenteditable="true" data-field="cgpa">9.19</td>
+                <td class="editable mono" contenteditable="true" data-field="percentage">91.9%</td>
+                <td><span class="status-badge status-pass">Pass</span></td>
+                <td><div class="bar-track sm"><div class="bar-fill" style="--fill:84%"></div></div></td>
+                <td class="marksheet-cell">
+                  <label class="upload-btn small">
+                    Upload<input type="file" accept="application/pdf" data-sem-upload="1" hidden />
+                  </label>
+                  <button class="btn-icon view-marksheet" data-sem="1" type="button">View</button>
+                  <button class="btn-icon download-marksheet" data-sem="1" type="button">Download</button>
+                </td>
+              </tr>
+              <tr data-sem="2">
+                <td>Semester 2</td>
+                <td class="editable mono" contenteditable="true" data-field="sgpa">__</td>
+                <td class="editable mono" contenteditable="true" data-field="cgpa">__</td>
+                <td class="editable mono" contenteditable="true" data-field="percentage">Upcoming</td>
+                <td><span class="status-badge status-pass">Pass</span></td>
+                <td><div class="bar-track sm"><div class="bar-fill" style="--fill:86%"></div></div></td>
+                <td class="marksheet-cell">
+                  <label class="upload-btn small">
+                    Upload<input type="file" accept="application/pdf" data-sem-upload="2" hidden />
+                  </label>
+                  <button class="btn-icon view-marksheet" data-sem="2" type="button">View</button>
+                  <button class="btn-icon download-marksheet" data-sem="2" type="button">Download</button>
+                </td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         FEES DASHBOARD
+    ========================================================== -->
+    <section id="fees" class="section fees-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ./finance --summary</p>
+        <h2 class="section-title">Fees Dashboard</h2>
+
+        <div class="fees-overview">
+          <div class="fee-summary-card glass reveal">
+            <span class="fee-summary-label">Total Fees</span>
+            <span class="fee-summary-value mono editable" contenteditable="true" data-field="total-fees">₹2,10,250</span>
+          </div>
+          <div class="fee-summary-card glass reveal">
+            <span class="fee-summary-label">Total Paid</span>
+            <span class="fee-summary-value mono editable success-text" contenteditable="true" data-field="total-paid">₹5,60,000</span>
+          </div>
+          <div class="fee-summary-card glass reveal">
+            <span class="fee-summary-label">Pending Amount</span>
+            <span class="fee-summary-value mono editable warning-text" contenteditable="true" data-field="total-pending">₹3,49,750</span>
+          </div>
+          <div class="fee-summary-card glass reveal circular-card">
+            <div class="circular-progress" data-percent="37.5">
+              <svg viewBox="0 0 120 120" class="ring-svg">
+                <circle cx="60" cy="60" r="52" class="ring-track" />
+                <circle cx="60" cy="60" r="52" class="ring-fill fee-ring" />
+              </svg>
+              <div class="ring-label">
+                <span class="ring-value mono">37.5%</span>
+                <span class="ring-sub">Paid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper glass reveal">
+          <table class="fees-table" id="fees-table">
+            <caption class="sr-only">Semester-wise fee breakdown and payment status</caption>
+            <thead>
+              <tr>
+                <th scope="col">Semester</th>
+                <th scope="col">Tuition</th>
+                <th scope="col">Hostel</th>
+                <th scope="col">Exam</th>
+                <th scope="col">Other</th>
+                <th scope="col">Scholarship</th>
+                <th scope="col">Total</th>
+                <th scope="col">Paid</th>
+                <th scope="col">Remaining</th>
+                <th scope="col">Status</th>
+                <th scope="col">Receipt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-sem="1">
+                <td>Sem 1</td>
+                <td class="editable mono" contenteditable="true">₹1,40,000</td>
+                <td class="editable mono" contenteditable="true">₹80,000</td>
+                <td class="editable mono" contenteditable="true">₹2,000</td>
+                <td class="editable mono" contenteditable="true">₹1,000</td>
+                <td class="editable mono" contenteditable="true">₹0</td>
+                <td class="editable mono" contenteditable="true">₹83,000</td>
+                <td class="editable mono" contenteditable="true">₹83,000</td>
+                <td class="editable mono" contenteditable="true">₹0</td>
+                <td><span class="status-badge status-paid">Paid</span></td>
+                <td class="receipt-cell">
+                  <label class="upload-btn small">Upload<input type="file" accept="application/pdf,image/*" data-fee-upload="1" hidden /></label>
+                  <button class="btn-icon download-receipt" data-sem="1" type="button">Download</button>
+                </td>
+              </tr>
+              <tr data-sem="2">
+                <td>Sem 2</td>
+                <td class="editable mono" contenteditable="true">₹1,40,000</td>
+                <td class="editable mono" contenteditable="true">₹80,000</td>
+                <td class="editable mono" contenteditable="true">₹2,000</td>
+                <td class="editable mono" contenteditable="true">₹1,000</td>
+                <td class="editable mono" contenteditable="true">₹0</td>
+                <td class="editable mono" contenteditable="true">₹83,000</td>
+                <td class="editable mono" contenteditable="true">₹83,000</td>
+                <td class="editable mono" contenteditable="true">₹0</td>
+                <td><span class="status-badge status-paid">Paid</span></td>
+                <td class="receipt-cell">
+                  <label class="upload-btn small">Upload<input type="file" accept="application/pdf,image/*" data-fee-upload="2" hidden /></label>
+                  <button class="btn-icon download-receipt" data-sem="2" type="button">Download</button>
+                </td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fee-history glass reveal">
+          <h3>Payment History</h3>
+          <ul class="history-list" id="fee-history-list">
+            <li><span class="mono">2025-01-14</span><span>Semester 7 — Partial payment received</span><span class="mono success-text">₹1,40,000</span></li>
+            <li><span class="mono">2024-07-10</span><span>Semester 6 — Full payment received</span><span class="mono success-text">₹93,500</span></li>
+            <li><span class="mono">2024-01-09</span><span>Semester 5 — Full payment received</span><span class="mono success-text">₹93,500</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         PROJECTS
+    ========================================================== -->
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ls projects/ --recursive</p>
+        <h2 class="section-title">Projects</h2>
+
+        <div class="projects-grid">
+          <article class="project-card glass tilt reveal">
+            <div class="project-image">
+              <img src="assets/images/project-1.jpg" alt="Screenshot of AI Study Assistant project" loading="lazy" width="480" height="300" />
+            </div>
+            <div class="project-body">
+              <h3>AI Study Assistant</h3>
+              <p>A chatbot that summarizes lecture notes and generates quiz questions using an NLP pipeline.</p>
+              <div class="tech-tags">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">Flask</span>
+                <span class="tech-tag">NLP</span>
+              </div>
+              <div class="project-actions">
+                <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost ripple">GitHub</a>
+                <a href="#" target="_blank" rel="noopener" class="btn btn-sm btn-primary ripple">Live Demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass tilt reveal">
+            <div class="project-image">
+              <img src="assets/images/project-2.jpg" alt="Screenshot of Campus Connect project" loading="lazy" width="480" height="300" />
+            </div>
+            <div class="project-body">
+              <h3>Campus Connect</h3>
+              <p>A student community platform for event discovery, resource sharing, and club management.</p>
+              <div class="tech-tags">
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">MongoDB</span>
+              </div>
+              <div class="project-actions">
+                <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost ripple">GitHub</a>
+                <a href="#" target="_blank" rel="noopener" class="btn btn-sm btn-primary ripple">Live Demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass tilt reveal">
+            <div class="project-image">
+              <img src="assets/images/project-3.jpg" alt="Screenshot of Handwritten Digit Recognizer project" loading="lazy" width="480" height="300" />
+            </div>
+            <div class="project-body">
+              <h3>Handwritten Digit Recognizer</h3>
+              <p>A CNN trained on MNIST, wrapped in a canvas-based web app for real-time digit prediction.</p>
+              <div class="tech-tags">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">TensorFlow</span>
+                <span class="tech-tag">Canvas API</span>
+              </div>
+              <div class="project-actions">
+                <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost ripple">GitHub</a>
+                <a href="#" target="_blank" rel="noopener" class="btn btn-sm btn-primary ripple">Live Demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass tilt reveal">
+            <div class="project-image">
+              <img src="assets/images/project-4.jpg" alt="Screenshot of this Portfolio Website project" loading="lazy" width="480" height="300" />
+            </div>
+            <div class="project-body">
+              <h3>This Portfolio Website</h3>
+              <p>A dashboard-driven personal site built with vanilla HTML, CSS and JavaScript — no frameworks.</p>
+              <div class="tech-tags">
+                <span class="tech-tag">HTML5</span>
+                <span class="tech-tag">CSS3</span>
+                <span class="tech-tag">JavaScript</span>
+              </div>
+              <div class="project-actions">
+                <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost ripple">GitHub</a>
+                <a href="#" target="_blank" rel="noopener" class="btn btn-sm btn-primary ripple">Live Demo</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         CERTIFICATES
+    ========================================================== -->
+    <section id="certificates" class="section certificates-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ls certificates/ --sort=date</p>
+        <h2 class="section-title">Certificates</h2>
+
+        <div class="certificates-grid">
+          <figure class="cert-card glass reveal" data-cert-title="Machine Learning Specialization" data-cert-org="Coursera" data-cert-date="Mar 2025">
+            <img src="assets/images/cert-1.jpg" alt="Machine Learning Specialization certificate" loading="lazy" width="360" height="260" />
+            <figcaption>
+              <h3>Machine Learning Specialization</h3>
+              <p>Coursera · Mar 2025</p>
+            </figcaption>
+          </figure>
+
+          <figure class="cert-card glass reveal" data-cert-title="Full-Stack Web Development" data-cert-org="Udemy" data-cert-date="Nov 2024">
+            <img src="assets/images/cert-2.jpg" alt="Full-Stack Web Development certificate" loading="lazy" width="360" height="260" />
+            <figcaption>
+              <h3>Full-Stack Web Development</h3>
+              <p>Udemy · Nov 2024</p>
+            </figcaption>
+          </figure>
+
+          <figure class="cert-card glass reveal" data-cert-title="Data Structures &amp; Algorithms" data-cert-org="GeeksforGeeks" data-cert-date="Jul 2024">
+            <img src="assets/images/cert-3.jpg" alt="Data Structures and Algorithms certificate" loading="lazy" width="360" height="260" />
+            <figcaption>
+              <h3>Data Structures &amp; Algorithms</h3>
+              <p>GeeksforGeeks · Jul 2024</p>
+            </figcaption>
+          </figure>
+
+          <figure class="cert-card glass reveal upload-cert">
+            <label class="upload-placeholder">
+              <span>+ Add Certificate</span>
+              <input type="file" accept="image/*,application/pdf" hidden />
+            </label>
+          </figure>
+        </div>
+
+        <div class="cert-modal" id="cert-modal" aria-hidden="true">
+          <button class="cert-modal-close" id="cert-modal-close" aria-label="Close certificate preview">&times;</button>
+          <img src="" alt="" id="cert-modal-img" />
+          <div class="cert-modal-info">
+            <h3 id="cert-modal-title"></h3>
+            <p id="cert-modal-meta"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         RESUME
+    ========================================================== -->
+    <section id="resume" class="section resume-section">
+      <div class="container">
+        <p class="eyebrow mono">$ cat resume.pdf</p>
+        <h2 class="section-title">Resume</h2>
+
+        <div class="resume-card glass reveal">
+          <div class="resume-preview">
+            <img src="assets/images/resume-preview.jpg" alt="Preview of Shashank Mishra's resume" loading="lazy" width="320" height="420" />
+          </div>
+          <div class="resume-body">
+            <h3>Shashank Mishra — Resume</h3>
+            <p>Last updated: <span class="mono">July 2026</span></p>
+            <div class="resume-actions">
+              <a href="assets/resume/Shashank_Mishra_Resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost ripple">View Resume</a>
+              <a href="assets/resume/Shashank_Mishra_Resume.pdf" download class="btn btn-primary ripple">Download Resume</a>
+            </div>
+            <label class="upload-btn">
+              Upload New Resume
+              <input type="file" accept="application/pdf" id="resume-upload" hidden />
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         CONTACT
+    ========================================================== -->
+    <section id="contact" class="section contact-section">
+      <div class="container">
+        <p class="eyebrow mono">$ ./contact --send</p>
+        <h2 class="section-title">Contact</h2>
+
+        <div class="contact-grid">
+          <form class="contact-form glass reveal" id="contact-form" novalidate>
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" required />
+              <span class="form-error" data-error-for="name">Enter your name.</span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required />
+              <span class="form-error" data-error-for="email">Enter a valid email address.</span>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" required />
+              <span class="form-error" data-error-for="subject">Enter a subject.</span>
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+              <span class="form-error" data-error-for="message">Enter a message.</span>
+            </div>
+            <button type="submit" class="btn btn-primary ripple full-width">
+              <span>Send Message</span>
+            </button>
+            <p class="form-success" id="form-success" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="contact-info reveal">
+            <div class="info-card glass">
+              <h3>Email</h3>
+              <a href="mailto:shashank.mishra@example.com">shashank.mishra@example.com</a>
+            </div>
+            <div class="info-card glass">
+              <h3>Phone</h3>
+              <a href="tel:+910000000000">+91 00000 00000</a>
+            </div>
+            <div class="info-card glass">
+              <h3>LinkedIn</h3>
+              <a href="https://linkedin.com/" target="_blank" rel="noopener">linkedin.com/in/shashankmishra</a>
+            </div>
+            <div class="info-card glass">
+              <h3>GitHub</h3>
+              <a href="https://github.com/" target="_blank" rel="noopener">github.com/shashankmishra</a>
+            </div>
+            <div class="info-card glass">
+              <h3>Location</h3>
+              <p>[City, State], India</p>
+            </div>
+            <div class="map-placeholder glass" aria-label="Map placeholder">
+              <span>Google Maps embed placeholder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="site-footer">
+    <div class="footer-wave" aria-hidden="true">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C300,60 900,0 1200,30 L1200,60 L0,60 Z"></path></svg>
+    </div>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="nav-logo"><span class="logo-bracket">&lt;</span>SM<span class="logo-bracket">/&gt;</span></a>
+        <p>B.Tech CSE (Artificial Intelligence) Student</p>
+      </div>
+
+      <nav class="footer-links" aria-label="Quick links">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#certificates">Certificates</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="footer-socials" aria-label="Social links">
+        <a href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+        <a href="https://twitter.com/" target="_blank" rel="noopener" aria-label="Twitter / X">Twitter</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span id="current-year"></span> Shashank Mishra. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <button class="fab back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 5l7 7-1.4 1.4L13 8.8V19h-2V8.8l-4.6 4.6L5 12z"/></svg>
+  </button>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
